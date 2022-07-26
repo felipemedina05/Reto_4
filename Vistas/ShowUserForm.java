@@ -24,8 +24,8 @@ public class ShowUserForm extends javax.swing.JDialog {
     }
 
     public void recibeDatos(String nombreEmp, String apellidos, String tipoDocumento, String document, String correo, String sucursal) {
-        System.out.println( " " + nombreEmp + " " + document + " " + correo+ " "+ sucursal);
-        
+        System.out.println(" " + nombreEmp + " " + document + " " + correo + " " + sucursal);
+
         txtNombre.setText(nombreEmp);
         txtApellidos.setText(apellidos);
         txtTipoDocumento.setText(tipoDocumento);
@@ -35,57 +35,77 @@ public class ShowUserForm extends javax.swing.JDialog {
     }
 
     public void ActualizarEmpleado() {
-        int idEmp = Integer.parseInt(txtsucursal.getText());
-        String nombreEmp = txtNombre.getText();
-        String apellidos = txtApellidos.getText();
-        String tipoDocumento = txtTipoDocumento.getText();
-        String document = txtDocumento.getText();
-        String correo = txtCorreo.getText();
+        String documento = txtDocumento.getText();
+        String queryIdEmpleado = "SELEC idEmp from empleado where documento = '" + documento + "';";
+        try {
+            connection = conexion.getConnection();
+            st = connection.createStatement();
+            rs = st.executeQuery(queryIdEmpleado);
 
-        if (nombreEmp.isEmpty()) {
-            JOptionPane.showConfirmDialog(this, "El nombre del empleado es requerido", "", JOptionPane.WARNING_MESSAGE);
+            while (rs.next()) {
+                int idEmpleado = rs.getInt("idEmp");
+                String nombre = txtNombre.getText();
+                String apellidos = txtApellidos.getText();
+                String correo = txtCorreo.getText();
 
-        } else if (apellidos.isEmpty()) {
-            JOptionPane.showConfirmDialog(this, "Los apellidos del empleado es un campo requeridos", "", JOptionPane.WARNING_MESSAGE);
-        } else if (correo.isEmpty()) {
-            JOptionPane.showConfirmDialog(this, "El correo del empleado es un campo requerido", "", JOptionPane.WARNING_MESSAGE);
-        } else {
-            String query = "UPDATE empleado SET nombreEmp='" + nombreEmp + "',apellidos='" + apellidos + "',correo='" + correo + "' WHERE idEmp = " + idEmp + " ;";
-            System.out.println(query);
-            try {
-                connection = conexion.getConnection();
-                st = connection.createStatement();
-                st.executeUpdate(query);
-                JOptionPane.showConfirmDialog(this, "El empleado ha sido actuliazado", "", JOptionPane.WARNING_MESSAGE);
-            } catch (SQLException e) {
-                JOptionPane.showConfirmDialog(this, "no se actualizo el empleado", "", JOptionPane.ERROR_MESSAGE);
+                if (nombre.isEmpty()) {
+                    JOptionPane.showConfirmDialog(this, "El nombre del empleado es requerido", "", JOptionPane.WARNING_MESSAGE);
+
+                } else if (apellidos.isEmpty()) {
+                    JOptionPane.showConfirmDialog(this, "Los apellidos del empleado es un campo requeridos", "", JOptionPane.WARNING_MESSAGE);
+                } else if (correo.isEmpty()) {
+                    JOptionPane.showConfirmDialog(this, "El correo del empleado es un campo requerido", "", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    String query = "UPDATE empleado SET nombreEmp='" + nombre + "',apellidos='" + apellidos + "',correo='" + correo + "' WHERE idEmp = " + idEmpleado + " ;";
+
+                    try {
+                        connection = conexion.getConnection();
+                        st = connection.createStatement();
+                        st.executeUpdate(query);
+                        JOptionPane.showConfirmDialog(this, "El empleado ha sido actuliazado", "", JOptionPane.WARNING_MESSAGE);
+                        this.dispose();
+                    } catch (SQLException e) {
+                        JOptionPane.showConfirmDialog(this, "no se actualizo el empleado", "", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                }
+
             }
-
-            this.dispose();
-
+        } catch (SQLException e) {
+            System.out.println(e);
         }
-
     }
 
     public void EliminarEmpleado() {
 
-        int idEmp = Integer.parseInt(txtsucursal.getText());
-
-        String query = "DELETE FROM `empleado` WHERE idEmp = " + idEmp + " ;";
-        System.out.println(query);
+        String documento = txtDocumento.getText();
+        String queryIdEmpleado = "SELEC idEmp from empleado where documento = '"+documento+"'";
         try {
             connection = conexion.getConnection();
             st = connection.createStatement();
-            st.executeUpdate(query);
-            JOptionPane.showMessageDialog(this, "El usuario ha sido eliminiado " );
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "no se pudo eliminar ", "", JOptionPane.ERROR_MESSAGE);
+            rs = st.executeQuery(queryIdEmpleado);
 
+            while (rs.next()) {
+                int idEmpleado = rs.getInt("idEmp");
+                String queryEliminar = "DELETE FROM `empleado` WHERE documento = '"+documento+"'";
+                System.out.println(queryEliminar);
+
+                try {
+                    st.executeUpdate(queryEliminar);
+                    JOptionPane.showMessageDialog(this, "El usuario ha sido eliminiado ");
+                    this.dispose();
+                } catch (SQLException e) {
+                    JOptionPane.showMessageDialog(this, "no se pudo eliminar ", "", JOptionPane.ERROR_MESSAGE);
+
+                }
+
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
         }
-        this.dispose();
     }
 
-    @SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -338,5 +358,4 @@ public class ShowUserForm extends javax.swing.JDialog {
     private javax.swing.JTextField txtsucursal;
     // End of variables declaration//GEN-END:variables
 
-    
 }
