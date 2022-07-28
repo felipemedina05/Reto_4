@@ -36,7 +36,7 @@ public class ShowUserForm extends javax.swing.JDialog {
 
     public void ActualizarEmpleado() {
         String documento = txtDocumento.getText();
-        String queryIdEmpleado = "SELEC idEmp from empleado where documento = '" + documento + "';";
+        String queryIdEmpleado = "SELECT idEmp from empleado WHERE documento = '"+documento+"';";
         try {
             connection = conexion.getConnection();
             st = connection.createStatement();
@@ -79,7 +79,7 @@ public class ShowUserForm extends javax.swing.JDialog {
     public void EliminarEmpleado() {
 
         String documento = txtDocumento.getText();
-        String queryIdEmpleado = "SELEC idEmp from empleado where documento = '"+documento+"'";
+        String queryIdEmpleado = "SELECT idEmp from empleado WHERE documento = '"+documento+"'";
         try {
             connection = conexion.getConnection();
             st = connection.createStatement();
@@ -103,6 +103,9 @@ public class ShowUserForm extends javax.swing.JDialog {
         } catch (SQLException e) {
             System.out.println(e);
         }
+    
+    
+   
     }
 
         @SuppressWarnings("unchecked")
